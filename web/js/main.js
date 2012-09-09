@@ -58,7 +58,7 @@ var capabilities = {};
 		$("#"+alertType).removeClass("hidden");
 	}
 
-	Df3.browser.displayData = function(column_names, day, document_average_total, csv){
+	DF3.browser.displayData = function(column_names, day, document_average_total, csv){
 		//lets cache the table references since we're going to hit them a bunch
 		var table_head = $("#display_table > thead");	
 		var table_body = $("#display_table > tbody");	
@@ -73,7 +73,7 @@ var capabilities = {};
 			"<tr>"+column_names[3]+"</tr>"+
 			"<tr>"+column_names[4]+"</tr>"+
 			"<tr>"+column_names[5]+"</tr>"+
-			"<tr>"+column_names[6]+"</tr>"+
+			"<tr>"+column_names[6]+"</tr>"
 		);
 		
 		var day_len = day.length;
@@ -85,7 +85,7 @@ var capabilities = {};
 				"<tr>"+day[3]+"</tr>"+
 				"<tr>"+day[4]+"</tr>"+
 				"<tr>"+day[5]+"</tr>"+
-				"<tr>"+day[6]+"</tr>"+
+				"<tr>"+day[6]+"</tr>"
 			);
 		}
 
