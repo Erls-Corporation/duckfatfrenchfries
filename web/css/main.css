@@ -4,7 +4,7 @@
    Author's custom styles
    ========================================================================== */
 
-html { 
+body.bug {
 	background: url(../img/backgrounds/bug.jpg) no-repeat center center fixed; 
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
@@ -12,16 +12,56 @@ html {
 	background-size: cover;
 }
 
+body.wood {
+	background: url(../img/backgrounds/wood.jpg) no-repeat center center fixed; 
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+
+
 .container, body {
 	background: transparent;
 	color: white;
 }
 
+.alert-error {
+	background-color: red;
+	color: white;
+	text-shadow: none;
+	border: 0;
+}
 
+.alert strong {
+	margin-right: 10px;
+}
 
+#pastebox_container, #or_container {
+	margin-top: 40px;
+}
 
+#or_container, .microcopy, .microcopy a {
+	color: #999;
+}
 
+.microcopy a {
+	text-decoration: underline;
+}
 
+#pasetbox {
+	height: 200px;
+}
+
+.microcopy {
+	font-size: 11px;
+}
+
+#total_open_avg p {
+	font-size: 72px;
+	color: #999;
+
+}
 
 
 

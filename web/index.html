@@ -22,27 +22,58 @@
 
         <script src="js/vendor/modernizr-2.6.1-respond-1.1.0.min.js"></script>
     </head>
-    <body>
+    <body class="wood">
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
         <![endif]-->
 
-        <!-- This code is taken from http://twitter.github.com/bootstrap/examples/hero.html -->
 
         <div class="container">
-
-            <!-- Main hero unit for a primary marketing message or call to action -->
             <div class="row">
-                <div class="span2">
-                    <div class="control-group">
+                <div class="span12">
+                    <div id="capability_failure_webdb" class="alert alert-error hidden">  
+                        <a class="close" data-dismiss="alert">×</a>  
+                        <strong>Whoa! I won't be able to save your data.</strong> It's not your fault, your browser just doesn't support webdb.  You can still open and view you documents, it just won't be saved between page reloads.  You can upgrade your browser to get the full experience.
+                    </div> 
+                    <div id="db_failure" class="alert alert-error hidden">  
+                        <a class="close" data-dismiss="alert">×</a>  
+                        <strong>Bad Things are happening!</strong> I'm not able to save some of your data for some reason. If you are geeky you can check the console to see what happened. If you aren't enjoy not having to now what a console is and go do something outside and we'll figure it out while you are away.
+                    </div> 
+                </div>
+            </div>
+            <div class="row">
+                <div class="span3">
+                    <div id="upload_container" class="control-group">
                         <label class="control-label" for="upload">Upload a CSV File</label>
                             <div class="controls">
                                 <input type="file" class="input-xlarge" id="upload">
                             </div>
                     </div>
+                    <div id="or_container">or, if you'd prefer </div>
+                    <div id="pastebox_container" class="control-group">
+                        <label class="control-label" for="pastebox">Paste in some CSV</label>
+                        <div class="controls">
+                            <textarea id="pastebox"></textarea>
+                        </div>
+                    </div>
+                    <div class="microcopy">You still looking for more options? <br />Are you confused about <a href="#">what CSV is?</a></div>
+
                 </div>
-                <div class="span12">
-                
+                <div class="span7">
+                    <div class="container">
+                        <div class="row">
+                            <table id="display_table" class="table table-hover">
+                                <thead></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="span2">
+                    <div id="total_open_avg" class="hidden">
+                        <label class="control-label">Average total of open defects</label>
+                        <p></p>
+                    </div>
                 </div>
             </div>
         </div> <!-- /container -->
