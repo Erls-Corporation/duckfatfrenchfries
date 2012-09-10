@@ -58,9 +58,17 @@ body.wood {
 }
 
 #total_open_avg p {
-	font-size: 72px;
-	color: #999;
+	font-size: 36px;
+	color: #ddd;
 
+}
+
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+	background-color: #222;
+}
+
+#display_container {
+	background-color: rgba(0,0,0,.3);
 }
 
 

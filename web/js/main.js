@@ -3,7 +3,9 @@ Array.prototype.avg = function(){
 	var len = this.length;
 	var total = 0;
 	for (var i = 0; i < len; i++) {
-		total = +this[i];
+		if (!isNaN(this[i])){
+			total += parseInt(this[i]);
+		}
 	}
 	return total/len;
 }
@@ -29,8 +31,9 @@ var capabilities = {};
 	//sets up the inputs, the file input and the textarea
 	//TODO: this is misnamed now, refactor
 	DF3.browser.setupFileUploader = function(){
-		$("#pastebox").live('change', function(){
-			DF3.csv.parseCSV($(this).val());
+		$("#pastebox_save").live('click', function(){
+			console.log("New Data from the Pastebox");
+			DF3.csv.parseCSV($("#pastebox").val());
 		});
 
 		if (capabilities.fileApi){
@@ -44,7 +47,9 @@ var capabilities = {};
 			});
 
 			$("#upload").live('change', function(e){
+				console.log("New Data from the file api");
 				DF3.csv.parseFile(e);
+
 			});
 
 		}else{
@@ -58,38 +63,43 @@ var capabilities = {};
 		$("#"+alertType).removeClass("hidden");
 	}
 
-	DF3.browser.displayData = function(column_names, day, document_average_total, csv){
+	DF3.browser.displayData = function(col_names, days, document_average_total, csv){
 		//lets cache the table references since we're going to hit them a bunch
-		var table_head = $("#display_table > thead");	
-		var table_body = $("#display_table > tbody");	
-		var last_thead_row = $("#display_table > thead:last");
-		var last_tbody_row = $("#display_table > tbody:last");
+		console.log("Displaying data with columns "+JSON.stringify(column_names));
+
+		var table_body = $("#display_table tbody");	
+		var last_tbody_row = $("#display_table tbody:last");
+		
+		var column_names = JSON.parse(col_names);
+		var columns = "<tr><th>"+column_names[0]+"</th>"+
+			"<th>"+column_names[1]+"</th>"+
+			"<th>"+column_names[2]+"</th>"+
+			"<th>"+column_names[3]+"</th>"+
+			"<th>"+column_names[4]+"</th>"+
+			"<th>"+column_names[5]+"</th>"+
+			"<th>"+column_names[6]+"</th></tr>";
 
 		//ok first the column names
-		table_head.html("");
-		last_thead_row.append("<tr>"+column_names[0]+"</tr>"+
-			"<tr>"+column_names[1]+"</tr>"+
-			"<tr>"+column_names[2]+"</tr>"+
-			"<tr>"+column_names[3]+"</tr>"+
-			"<tr>"+column_names[4]+"</tr>"+
-			"<tr>"+column_names[5]+"</tr>"+
-			"<tr>"+column_names[6]+"</tr>"
-		);
+		$("#display_table thead").html(columns);
 		
-		var day_len = day.length;
+		var days_len = days.length;
 		table_body.html("");
-		for(var i = 0; i<day_len; i++){
-			last_tbody_row.append("<tr>"+day[0]+"</tr>"+
-				"<tr>"+day[1]+"</tr>"+
-				"<tr>"+day[2]+"</tr>"+
-				"<tr>"+day[3]+"</tr>"+
-				"<tr>"+day[4]+"</tr>"+
-				"<tr>"+day[5]+"</tr>"+
-				"<tr>"+day[6]+"</tr>"
+		for(var i = 0; i<days_len; i++){
+			var day = days[i];
+			last_tbody_row.append("<tr>"+
+				"<td>"+day.list_date+"</td>"+
+				"<td>"+day.severity_2+"</td>"+
+				"<td>"+day.severity_3+"</td>"+
+				"<td>"+day.severity_4+"</td>"+
+				"<td>"+day.to_verify+"</td>"+
+				"<td>"+day.total_open_defects+"</td>"+
+				"<td>"+day.total_defects+"</td>"+
+				"</tr>"
 			);
 		}
 
-		$("#total_open_avg > p").html("document_average_total")
+		$("#total_open_avg p").html(Math.round(document_average_total));
+		$("#total_open_avg").removeClass("hidden");
 	}
 
 	//handle the csv input from the file "uploader"
@@ -108,7 +118,7 @@ var capabilities = {};
 
 	//takes the raw csv content and returns a parsed array
 	DF3.csv.parseCSV = function(csv){
-		var contentArray = $.csv2Array(csv);
+		var contentArray = CSVToArray(csv);
 		DF3.csv.prepareSave(contentArray, csv);
 	}
 
@@ -121,29 +131,35 @@ var capabilities = {};
 		for (var i=0; i<len; i++){
 			if (i > 0){
 				var row = contentArray[i];
-				total_defect_array[i] = row[5];
-				day_array[i]['list_date'] = row[0];
-				day_array[i]['severity_2'] = row[1];
-				day_array[i]['severity_3'] = row[2];
-				day_array[i]['severity_4'] = row[3];
-				day_array[i]['to_verify'] = row[4];
-				day_array[i]['total_open_defects'] = row[5];
-				day_array[i]['total_defects'] = row[6];
+				if (row[0]){
+					total_defect_array[i] = row[5];
+					day_array.push({'list_date' : row[0],
+						'severity_2' : row[1],
+						'severity_3' : row[2],
+						'severity_4' : row[3],
+						'to_verify' : row[4],
+						'total_open_defects' : row[5],
+						'total_defects' : row[6]
+					});
+				}
 
 			}else{
-				var column_names = contentArray[i].serializeArray();
+				var column_names = JSON.stringify(contentArray[i]);
 			}
 		}
-		var document_average_total = average(total_defect_array);
+		var document_average_total = total_defect_array.avg();
 		var timestamp = new Date().getTime();
 
 		//save the data
 		//document
-		DF3.db.addDocument(timestamp, initial_document, document_average_total, column_names);
+		DF3.db.addDocument(timestamp, csv, document_average_total, column_names);
+		console.log("Adding a document record for "+timestamp+" with "+JSON.stringify(column_names));
+
 		//day
 		var day_len = day_array.length;
-		for (var j; j<day_len; day++){
+		for (var j=0; j<day_len; j++){
 			DF3.db.addDay(day_array[j], timestamp);
+			console.log("Adding a day record for "+JSON.stringify(day_array[j]));
 		}
 
 		//display the data
@@ -221,11 +237,11 @@ var capabilities = {};
 
 	// call this when good things happen on the db, basically just console.logs right now
 	DF3.db.onSuccess = function(tx, r){
-		console.log("Data saved: "+r);
+		console.log("Data saved: "+JSON.stringify(r));
 	}
 	// call this when bad things happen on the db, log out and do an alert
 	DF3.db.onFailure = function(tx, e){
-		console.log("Data Failed to Save: "+e);
+		console.log("Data Failed to Save: "+JSON.stringify(e));
 		 DF3.browser.alertUser("db_failure");
 	}
 
