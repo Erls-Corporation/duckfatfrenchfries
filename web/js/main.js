@@ -104,6 +104,7 @@ var capabilities = {};
 
 	//handle the csv input from the file "uploader"
 	DF3.csv.parseFile = function(e){
+		console.log("Parsing file contents");
 		e = e || window.event;
         e.preventDefault();
         e = e.originalEvent || e;
@@ -112,8 +113,12 @@ var capabilities = {};
         // if you want to have multiples, loop files.
         var file = e.target.files[0];
 
-        var reader = new FileReader();
-        reader.readAsText(file);
+		var reader = new FileReader();
+      	reader.onload = function(e) { 
+	      DF3.csv.parseCSV(e.target.result);      
+      	}
+      	reader.readAsText(file);
+        
 	}
 
 	//takes the raw csv content and returns a parsed array
