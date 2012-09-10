@@ -14,7 +14,8 @@ Array.prototype.avg = function(){
 // DF3 is going to be our application namespace, so set that up
 var DF3 = {};
 var capabilities = {};
-	
+var backgrounds = ["wood", "bug", "linen", "flowers"];
+
 	//setup the csv handler
 	DF3.csv = {};
 	//set up the webdb
@@ -63,13 +64,45 @@ var capabilities = {};
 		$("#"+alertType).removeClass("hidden");
 	}
 
+	DF3.browser.bg_changer = function(){
+		$("#bg_changer").live("click", function(){
+			var store = window.localStorage;
+			var index = DF3.browser.bg_index();
+			var next_index = 1;
+			if (index === (backgrounds.length - 1)){
+				next_index = 0;
+			}else{
+				next_index = (index + 1);
+			}
+			store.setItem("backgroundIndex", next_index);
+			DF3.browser.bg_set(next_index);
+		});
+	}
+
+	DF3.browser.bg_index = function(){
+		var store = window.localStorage;
+		var index = parseInt(store.getItem("backgroundIndex"));
+		if (!index){
+			index = 0;
+		}	
+		return index;
+	}
+
+
+	DF3.browser.bg_set = function(index){
+		$("body").removeClass();		
+		console.log("Updating background to "+backgrounds[index]+" at "+index);
+		$("body").addClass(backgrounds[index]);
+
+	}
+
 	DF3.browser.displayData = function(col_names, days, document_average_total, csv){
 		//lets cache the table references since we're going to hit them a bunch
 		console.log("Displaying data with columns "+JSON.stringify(column_names));
 
 		var table_body = $("#display_table tbody");	
 		var last_tbody_row = $("#display_table tbody:last");
-		
+		$("#display_container").removeClass("hidden");
 		var column_names = JSON.parse(col_names);
 		var columns = "<tr><th>"+column_names[0]+"</th>"+
 			"<th>"+column_names[1]+"</th>"+
@@ -193,7 +226,7 @@ var capabilities = {};
 	DF3.db.createDocumentsTable = function(){
 		DF3.db.database.transaction(function(tx) {
     		tx.executeSql("CREATE TABLE IF NOT EXISTS documents(ID INTEGER PRIMARY KEY ASC, document_id TEXT,"+
-    			" document_average_total REAL, initial_document TEXT, added_on DATETIME)", []);
+    			" document_average_total REAL, initial_document TEXT, column_names TEXT, added_on DATETIME)", []);
   		});
 	}
 
@@ -201,7 +234,7 @@ var capabilities = {};
 	DF3.db.addDocument = function(timestamp, initial_document, total_average, column_names){
 		DF3.db.database.transaction(function(tx){
     		var addedOn = new Date();
-    		tx.executeSql("INSERT INTO documents(document_id, document_average_total, initial_document, added_on) VALUES (?,?,?)",
+    		tx.executeSql("INSERT INTO documents(document_id, document_average_total, initial_document, column_names, added_on) VALUES (?,?,?,?,?)",
         	[timestamp, total_average, initial_document, column_names, addedOn],
         	DF3.db.onSuccess,
         	DF3.db.onError);
@@ -240,6 +273,13 @@ var capabilities = {};
    		});
 	}
 
+	//this is for development
+	DF3.db.removeTable = function(table){
+		DF3.db.database.transaction(function (tx) {
+  			tx.executeSql('DROP TABLE '+table);
+		});
+	}
+
 	// call this when good things happen on the db, basically just console.logs right now
 	DF3.db.onSuccess = function(tx, r){
 		console.log("Data saved: "+JSON.stringify(r));
@@ -252,6 +292,10 @@ var capabilities = {};
 
 	initialize = function(){
 		DF3.browser.determineCapabilities();
+		DF3.browser.bg_set(DF3.browser.bg_index());
+		DF3.browser.bg_changer();
 		DF3.browser.setupFileUploader();
 		DF3.db.open();
+		DF3.db.createDocumentsTable();
+		DF3.db.createDayTable();
 	}()

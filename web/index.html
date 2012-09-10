@@ -62,12 +62,12 @@
                         <p></p>
                     </div>
 
-                    <div class="microcopy">You still looking for more options? <br />Are you confused about <a href="#">what CSV is?</a></div>
-
+                    <div class="microcopy">Are you confused about <a data-toggle="modal" href="#what_is_csv">what CSV is?</a></div>
+                    <button id="bg_changer" class="btn btn-inverse"><i class="icon-picture icon-white"></i></button>
                 </div>
                 <div class="span9">
                     <div class="container">
-                        <div class="row" id="display_container">
+                        <div class="row hidden" id="display_container">
                             <table id="display_table" class="table table-hover">
                                 <thead></thead>
                                 <tbody></tbody>
@@ -77,6 +77,19 @@
                 </div>
             </div>
         </div> <!-- /container -->
+
+        <div id="what_is_csv" class="modal hide fade">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h3>What is CSV?</h3>
+            </div>
+            <div class="modal-body">
+                <p>A CSV, or comma-separated values, or comma delimited stores tabular (think spreadsheet data) in a very simple way. Columns are seperated by commas, rows data is represented per line.</p>
+            </div>
+            <div class="modal-footer">
+              <a href="#" class="btn">Close</a>
+            </div>
+        </div>
 
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.8.0.min.js"><\/script>')</script>
